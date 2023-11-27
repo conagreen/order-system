@@ -1,30 +1,36 @@
 package com.order.system;
 
-import java.math.BigDecimal;
+import com.order.system.domain.Category;
+import com.order.system.domain.Item;
+import com.order.system.domain.Order;
+import com.order.system.domain.Orders;
+import com.order.system.view.InputView;
+import com.order.system.view.ResultView;
+
 import java.util.*;
 
 public class Application {
-    Map<String, String> categories;
-    Map<Long, Item> items;
+    List<Category> categories;
+    List<Item> items;
 
     public Application() {
-        categories = new HashMap<>();
-        categories.put("1", "의류");
-        categories.put("2", "가방");
-        categories.put("3", "신발");
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "의류"));
+        categories.add(new Category(2, "가방"));
+        categories.add(new Category(3, "신발"));
 
-        items = new HashMap<>();
-        items.put(1L, new Item(1L, "나이키 상의", BigDecimal.valueOf(48000), 1, 5L));
-        items.put(2L, new Item(2L, "아디다스 상의", BigDecimal.valueOf(38000), 1, 10L));
+        items = new ArrayList<>();
+        items.add(new Item(1, "나이키 상의", 48000, 1, 5));
+        items.add(new Item(2, "아디다스 상의", 38000, 1, 10));
 
-        items.put(3L, new Item(3L, "나이키 가방", BigDecimal.valueOf(98000), 2, 7L));
-        items.put(4L, new Item(4L, "아디다스 가방", BigDecimal.valueOf(62000), 2, 7L));
-        items.put(5L, new Item(5L, "루이비통 가방", BigDecimal.valueOf(4200000), 2, 3L));
+        items.add(new Item(3, "나이키 가방", 98000, 2, 7));
+        items.add(new Item(4, "아디다스 가방", 62000, 2, 7));
+        items.add(new Item(5, "루이비통 가방", 4200000, 2, 3));
 
-        items.put(6L, new Item(6L, "나이키 신발", BigDecimal.valueOf(92000), 3, 10L));
-        items.put(7L, new Item(7L, "아디다스 신발", BigDecimal.valueOf(120000), 3, 15L));
-        items.put(8L, new Item(8L, "뉴발란스 신발", BigDecimal.valueOf(128000), 3, 30L));
-        items.put(9L, new Item(9L, "크록스 신발", BigDecimal.valueOf(42000), 3, 20L));
+        items.add(new Item(6, "나이키 신발", 92000, 3, 10));
+        items.add(new Item(7, "아디다스 신발", 120000, 3, 15));
+        items.add(new Item(8, "뉴발란스 신발", 128000, 3, 30));
+        items.add(new Item(9, "크록스 신발", 42000, 3, 20));
     }
 
     public static void main(String[] args) {
@@ -33,55 +39,42 @@ public class Application {
     }
 
     private void process() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("주문하시겠습니까? (o: 주문, q: 종료)");
-        String answer = scanner.nextLine();
+        String answer = InputView.askingOrder();
 
         switch (answer) {
             case "o" :
-                long categoryId = selectItemCategory();
-                selectItem(categoryId);
+                long categoryId = InputView.categoryId(categories);
+                List<Item> items = getItemsByCategoryId(categoryId);
+                String[] itemIdAndQuantity = InputView.itemIdAndQuantity(items).split(" ");
+                Item item = getItemById(Long.parseLong(itemIdAndQuantity[0]));
+                Orders orders = new Orders(Collections.singletonList(new Order(item, Long.parseLong(itemIdAndQuantity[1]))));
+                ResultView.orderList(orders);
                 break;
             case "q" :
-                System.out.println("주문을 종료합니다. 감사합니다.");
+                ResultView.orderCancel();
                 break;
             default :
                 System.out.println("올바른 값을 입력하십시오.");
                 process();
-
         }
     }
 
-    private void selectItem(long categoryId) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("상품번호 / 상품명 / 가격 / 재고수량");
-
-        for (Map.Entry<Long, Item> itemMap : items.entrySet()) {
-            Item item = itemMap.getValue();
-            if (item.getCategoryId() == categoryId) {
-                System.out.println(item.getId() + " " + item.getName() + " " + item.getPrice() + " " + item.getQuantity());
+    private Item getItemById(long itemId) {
+        for (Item item : items) {
+            if (item.getId() == itemId) {
+                return item;
             }
         }
-
-        System.out.println("상품 번호를 입력하십시오. (q: 종료)");
-        long itemId = scanner.nextInt();
-        System.out.println("구매 수량을 입력하십시오. (q: 종료)");
-        long quantity = scanner.nextInt();
-
-        Item item = items.get(itemId);
-        System.out.println("< 구매 목록 >");
-        System.out.println(item.getId() + " " + item.getName() + " " + item.getPrice());
-        System.out.println("수량: "  + quantity);
-
+        return null;
     }
 
-    private long selectItemCategory() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("카테고리 번호를 입력하십시오. (q: 종료)");
-        for (Map.Entry<String, String> category : categories.entrySet()) {
-            System.out.println(category.getKey() + ". " + category.getValue());
+    private List<Item> getItemsByCategoryId(long categoryId) {
+        List<Item> list = new ArrayList<>();
+        for (Item item : items) {
+            if (item.isSameCategory(categoryId)) {
+                list.add(item);
+            }
         }
-
-        return scanner.nextInt();
+        return list;
     }
 }
