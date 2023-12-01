@@ -18,7 +18,7 @@ public class Item {
         this.quantity = quantity;
     }
 
-    public boolean isSameCategory(long categoryId) {
+    public boolean belongsToCategory(long categoryId) {
         return this.categoryId == categoryId;
     }
 }

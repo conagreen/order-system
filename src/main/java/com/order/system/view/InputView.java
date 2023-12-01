@@ -28,7 +28,7 @@ public class InputView {
         for (Item item : items) {
             System.out.printf("%d / %s / %d / %d%n", item.getId(), item.getName(), item.getPrice(), item.getQuantity());
         }
-        System.out.println("상품 번호와 구매 수량을 공백으로 구분하여 입력하십시오. (q: 종료)");
+        System.out.println("상품 번호와 구매 수량을 공백으로 구분하여 입력하십시오. (p: 이전, y: 결제, q: 종료)");
         return scanner.nextLine();
     }
 }
