@@ -3,6 +3,8 @@ package com.order.system.service;
 import com.order.system.domain.Item;
 import com.order.system.domain.Order;
 import com.order.system.domain.Orders;
+import com.order.system.domain.strategy.OrderStandardStrategy;
+import com.order.system.domain.strategy.OrderStrategy;
 import com.order.system.view.InputView;
 import com.order.system.view.ResultView;
 
@@ -11,6 +13,7 @@ import java.util.*;
 public class OrderServiceImpl implements OrderService {
     private CategoryService categoryService = new CategoryServiceImpl();
     private ItemService itemService = new ItemServiceImpl();
+    private OrderStrategy orderStrategy = new OrderStandardStrategy();
     Map<Long, Integer> menuCard = new HashMap<>();
 
     @Override
@@ -48,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
                     }
                     orderList.add(new Order(orderedItem, orderedQuantity));
                 }
-                Orders orders = new Orders(orderList);
+                Orders orders = new Orders(orderList, orderStrategy);
                 ResultView.orderList(orders);
                 break;
             case "q":

@@ -8,15 +8,15 @@ public class ResultView {
     public static void orderList(Orders orders) {
         System.out.println("< 주문 내역 >");
         for (Order order : orders.getOrders()) {
-            System.out.printf("%s (%d개) - %d원%n", order.getItemName(), order.getQuantity(), order.getTotalPrice());
+            System.out.printf("%s (%d개) - %d원%n", order.getItemName(), order.getQuantity(), order.getTotalAmount());
         }
         System.out.println("-----------------------------------------------------------");
         System.out.printf("주문금액: %d원%n", orders.getOrderAmount());
         if (orders.hasDeliveryFee()) {
-            System.out.printf("배송비: %d원%n", orders.getDeliveryCharge());
+            System.out.printf("배송비: %d원%n", orders.getDeliveryFee());
         }
         System.out.println("-----------------------------------------------------------");
-        System.out.printf("지불금액: %d원%n", orders.getPaymentAmount());
+        System.out.printf("결제금액: %d원%n", orders.getPaymentAmount());
     }
 
     public static void orderCancel() {

@@ -1,5 +1,6 @@
 package com.order.system.domain;
 
+import com.order.system.domain.strategy.OrderStrategy;
 import lombok.Getter;
 
 import java.util.List;
@@ -8,32 +9,32 @@ import java.util.List;
 public class Orders {
     private List<Order> orders;
 
-    private long deliveryCharge;
-
     private long orderAmount;
 
     private long paymentAmount;
 
-    public Orders(List<Order> orders) {
+    private long deliveryFee;
+
+    public Orders(List<Order> orders, OrderStrategy orderStrategy) {
         this.orders = orders;
-        this.deliveryCharge = 0;
-        this.orderAmount = createOrderAmount();
-        this.paymentAmount = createPaymentAmount();
+        this.orderAmount = calculateOrderAmount();
+        this.deliveryFee = orderStrategy.calculateDeliveryFee(orderAmount);
+        this.paymentAmount = calculatePaymentAmount();
     }
 
-    private long createPaymentAmount() {
-        return orderAmount + deliveryCharge;
+    private long calculatePaymentAmount() {
+        return orderAmount + deliveryFee;
     }
 
-    private long createOrderAmount() {
+    private long calculateOrderAmount() {
         long orderAmount = 0;
         for (Order order : orders) {
-            orderAmount += order.getTotalPrice();
+            orderAmount += order.getTotalAmount();
         }
         return orderAmount;
     }
 
     public boolean hasDeliveryFee() {
-        return deliveryCharge > 0;
+        return deliveryFee > 0;
     }
 }

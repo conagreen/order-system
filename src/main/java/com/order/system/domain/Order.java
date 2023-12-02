@@ -13,7 +13,7 @@ public class Order {
 
     private long quantity;
 
-    private long totalPrice;
+    private long totalAmount;
 
     private String itemName;
 
@@ -23,7 +23,7 @@ public class Order {
         this.id = IdGenerator.orderId();
         this.itemId = item.getId();
         this.quantity = quantity;
-        this.totalPrice = item.getPrice() * quantity;
+        this.totalAmount = item.getAmount() * quantity;
         this.itemName = item.getName();
         this.orderDate = LocalDateTime.now();
     }
