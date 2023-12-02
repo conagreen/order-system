@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.order.system.service.OrderServiceImplTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-12-02T16:30:21" hostname="Conaui-MacBookPro.local" time="0.028">
+  <properties/>
+  <testcase name="멀티 스레드 환경에서의 재고 검증 테스트 - SoldOutException 발생" classname="com.order.system.service.OrderServiceImplTest" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
