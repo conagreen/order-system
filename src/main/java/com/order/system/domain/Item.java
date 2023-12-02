@@ -8,17 +8,21 @@ public class Item {
     private String name;
     private long price;
     private int categoryId;
-    private int quantity;
+    private int stock;
 
-    public Item(long id, String name, long price, int categoryId, int quantity) {
+    public Item(long id, String name, long price, int categoryId, int stock) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.categoryId = categoryId;
-        this.quantity = quantity;
+        this.stock = stock;
     }
 
     public boolean belongsToCategory(long categoryId) {
         return this.categoryId == categoryId;
+    }
+
+    public boolean hasSellableStock(int quantity) {
+        return stock - quantity >= 0;
     }
 }

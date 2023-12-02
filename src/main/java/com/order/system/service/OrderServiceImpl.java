@@ -11,7 +11,7 @@ import java.util.*;
 public class OrderServiceImpl implements OrderService {
     private CategoryService categoryService = new CategoryServiceImpl();
     private ItemService itemService = new ItemServiceImpl();
-    Map<Integer, Integer> menuCard = new HashMap<>();
+    Map<Long, Integer> menuCard = new HashMap<>();
 
     @Override
     public void process() {
@@ -37,10 +37,16 @@ public class OrderServiceImpl implements OrderService {
                 order();
                 break;
             case "y":
-                Map<Item, Integer> orderedItems = itemService.getOrderedItems(menuCard);
+                List<Item> orderedItems = itemService.getItemsById(menuCard.keySet());
                 List<Order> orderList = new ArrayList<>();
-                for (Map.Entry<Item, Integer> orderedItem : orderedItems.entrySet()) {
-                    orderList.add(new Order(orderedItem.getKey(), orderedItem.getValue()));
+                for (Item orderedItem : orderedItems) {
+                    int orderedQuantity = menuCard.get(orderedItem.getId());
+                    if (!isSellable(orderedItem, orderedQuantity)) {
+                        ResultView.outOfStockItem(orderedItem, orderedQuantity);
+                        process();
+                        return;
+                    }
+                    orderList.add(new Order(orderedItem, orderedQuantity));
                 }
                 Orders orders = new Orders(orderList);
                 ResultView.orderList(orders);
@@ -54,11 +60,15 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    private boolean isSellable(Item item, int orderedQuantity) {
+        return item.hasSellableStock(orderedQuantity);
+    }
+
     private void cancel() {
         ResultView.orderCancel();
     }
 
     private void addItemToMenuCard(String[] itemIdAndQuantity) {
-        menuCard.put(Integer.parseInt(itemIdAndQuantity[0]), Integer.parseInt(itemIdAndQuantity[1]));
+        menuCard.put(Long.parseLong(itemIdAndQuantity[0]), Integer.parseInt(itemIdAndQuantity[1]));
     }
 }
