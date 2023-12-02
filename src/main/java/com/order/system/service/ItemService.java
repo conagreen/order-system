@@ -10,4 +10,6 @@ public interface ItemService {
     String[] getSelectedItemIdAndQuantity(long categoryId);
 
     List<Item> getItemsById(Set<Long> itemIds);
+
+    Item getItem(long itemId);
 }

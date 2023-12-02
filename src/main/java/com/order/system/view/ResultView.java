@@ -17,18 +17,20 @@ public class ResultView {
         }
         System.out.println("-----------------------------------------------------------");
         System.out.printf("결제금액: %d원%n", orders.getPaymentAmount());
+        System.out.println("-----------------------------------------------------------");
     }
 
     public static void orderCancel() {
         System.out.println("주문을 종료합니다. 감사합니다.");
     }
 
-    public static void outOfStockItem(Item item, int orderedQuantity) {
+    public static void outOfStockItem() {
         System.out.println("-----------------------------------------------------------");
-        System.out.printf("주문하신 [ %s ] 상품의 재고가 부족합니다.%n", item.getName());
-        System.out.printf("재고 수량: %d%n", item.getStock());
-        System.out.printf("주문 수량: %d%n", orderedQuantity);
-        System.out.println("이용해 주셔서 감사합니다.");
+        System.out.println("주문하신 상품의 재고가 부족합니다. 이용해 주셔서 감사합니다.");
         System.out.println("-----------------------------------------------------------");
+    }
+
+    public static void wrongAnswer() {
+        System.out.println("올바른 값을 입력하십시오.");
     }
 }

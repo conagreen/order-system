@@ -15,7 +15,7 @@ public class InputView {
 
     public static long categoryId(List<Category> categories) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("카테고리 번호를 입력하십시오. (q: 종료)");
+        System.out.println("카테고리 번호를 입력하십시오.");
         for (Category category : categories) {
             System.out.println(category.getId() + ". " + category.getName());
         }

@@ -3,72 +3,76 @@ package com.order.system.service;
 import com.order.system.domain.Item;
 import com.order.system.domain.Order;
 import com.order.system.domain.Orders;
-import com.order.system.domain.strategy.OrderStandardStrategy;
 import com.order.system.domain.strategy.OrderStrategy;
-import com.order.system.view.InputView;
+import com.order.system.exception.SoldOutException;
 import com.order.system.view.ResultView;
 
 import java.util.*;
 
 public class OrderServiceImpl implements OrderService {
-    private CategoryService categoryService = new CategoryServiceImpl();
-    private ItemService itemService = new ItemServiceImpl();
-    private OrderStrategy orderStrategy = new OrderStandardStrategy();
-    Map<Long, Integer> menuCard = new HashMap<>();
+    private CategoryService categoryService;
+    private ItemService itemService;
+    private OrderStrategy orderStrategy;
+    private Map<Long, Integer> menuCard;
+
+    public OrderServiceImpl(CategoryService categoryService, ItemService itemService, OrderStrategy orderStrategy, Map<Long, Integer> menuCard) {
+        this.categoryService = categoryService;
+        this.itemService = itemService;
+        this.orderStrategy = orderStrategy;
+        this.menuCard = menuCard;
+    }
 
     @Override
     public void process() {
-        String answer = InputView.askingOrder();
-        switch (answer) {
-            case "o":
-                order();
-                break;
-            case "q":
-                cancel();
-                break;
-            default:
-                System.out.println("올바른 값을 입력하십시오.");
-                process();
-        }
-    }
-
-    private void order() {
         long categoryId = categoryService.getSelectedCategoryId();
         String[] itemIdAndQuantity = itemService.getSelectedItemIdAndQuantity(categoryId);
         switch (itemIdAndQuantity[0]) {
             case "p":
-                order();
+                process();
                 break;
             case "y":
-                List<Item> orderedItems = itemService.getItemsById(menuCard.keySet());
-                List<Order> orderList = new ArrayList<>();
-                for (Item orderedItem : orderedItems) {
-                    int orderedQuantity = menuCard.get(orderedItem.getId());
-                    if (!isSellable(orderedItem, orderedQuantity)) {
-                        ResultView.outOfStockItem(orderedItem, orderedQuantity);
-                        process();
-                        return;
-                    }
-                    orderList.add(new Order(orderedItem, orderedQuantity));
+                List<Order> orderList;
+                try {
+                    orderList = order(menuCard);
+                } catch (SoldOutException e) {
+                    ResultView.outOfStockItem();
+                    process();
+                    return;
+                }
+                if (orderList == null) {
+                    return;
                 }
                 Orders orders = new Orders(orderList, orderStrategy);
                 ResultView.orderList(orders);
                 break;
             case "q":
-                cancel();
+                ResultView.orderCancel();
                 break;
             default:
                 addItemToMenuCard(itemIdAndQuantity);
-                order();
+                process();
         }
     }
 
-    private boolean isSellable(Item item, int orderedQuantity) {
-        return item.hasSellableStock(orderedQuantity);
+    @Override
+    public synchronized List<Order> order(Map<Long, Integer> menuCard) {
+        List<Item> orderedItems = itemService.getItemsById(menuCard.keySet());
+        List<Order> orderList = new ArrayList<>();
+        for (Item orderedItem : orderedItems) {
+            int orderedQuantity = menuCard.get(orderedItem.getId());
+            if (isSellable(orderedItem.getId(), orderedQuantity)) {
+                orderedItem.sellStock(orderedQuantity);
+            } else {
+                throw new SoldOutException();
+            }
+            orderList.add(new Order(orderedItem, orderedQuantity));
+        }
+        return orderList;
     }
 
-    private void cancel() {
-        ResultView.orderCancel();
+    private boolean isSellable(long itemId, int orderedQuantity) {
+        final Item item = itemService.getItem(itemId);
+        return item.getStock() >= orderedQuantity;
     }
 
     private void addItemToMenuCard(String[] itemIdAndQuantity) {

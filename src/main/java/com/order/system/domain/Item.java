@@ -22,7 +22,7 @@ public class Item {
         return this.categoryId == categoryId;
     }
 
-    public boolean hasSellableStock(int quantity) {
-        return stock - quantity >= 0;
+    public void sellStock(int quantity) {
+        stock = stock - quantity;
     }
 }

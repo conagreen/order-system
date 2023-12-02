@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemListRepository implements ItemRepository {
-    private List<Item> items;
+    private static List<Item> items;
 
     public ItemListRepository() {
         init();
